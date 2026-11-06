@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Versioned pre-commit hook. Installed into .git/hooks/pre-commit by `pnpm run install-hooks`.
+# Refuses the commit if lint, typecheck or tests fail. Do not bypass; fix the code.
+set -u
+cd "$(git rev-parse --show-toplevel)" || exit 1
+[ -f package.json ] || { echo 'pre-commit: no package.json yet, nothing to check'; exit 0; }
+command -v pnpm >/dev/null 2>&1 || { echo 'pre-commit: pnpm not found on PATH; refusing to commit unchecked' >&2; exit 1; }
+
+run() { echo "pre-commit: $1"; pnpm "$1" || { echo "pre-commit: $1 failed; commit refused. Fix it, then commit again." >&2; exit 1; }; }
+run lint
+run typecheck
+run test
+exit 0
