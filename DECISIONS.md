@@ -35,3 +35,11 @@ Agents: read this before any architectural change. An agent may draft an entry; 
 - **Cost:** pnpm must be installed on each machine (`npm i -g pnpm`). The first install of a Vite project stops at `esbuild`'s build script until `pnpm approve-builds` is run. `npx` becomes `pnpm dlx`/`pnpm exec`; some docs and tools assume npm. `pnpm setup` is a built-in pnpm command, so the hook-installer script is named `install-hooks` and must be called with `pnpm run`.
 - **Rejected alternative:** npm (the default everyone knows; none of the three protections without extra configuration). Bun/Yarn not evaluated.
 - **Revisit when:** A project needs a tool that does not work under pnpm's strict `node_modules`, or the defaults above change.
+
+## D5 — v1 shape: Pocock's pipeline plus our enforcement layer
+- **Date / status:** 2026-11-06 / accepted (v1)
+- **Decision:** The workflow skills are vendored unchanged from mattpocock/skills @ `4ae2317` (grill-me, grilling, to-spec, to-tickets, implement, tdd, code-review, codebase-design). Our layer is enforcement only: `CLAUDE.md`, permission rules (`.claude/settings.json`), the PreToolUse guard (`.claude/hooks/guard-bash.sh`), and the pre-commit hook (`scripts/hooks/pre-commit`).
+- **Why:** Produces a working, defensible harness for v1. His skills are field-tested; our research's strongest findings (reward hacking via skipped hooks, hallucinated packages) are about enforcement, which his skills don't cover.
+- **Cost:** Cold review is his `code-review` (fresh sub-agents, but findings aren't required to be verified by running code). His `implement` would commit without pausing after review, so a `CLAUDE.md` line overrides it. His interview asks in rounds, where the drafts asked one question at a time.
+- **Rejected alternative:** Finish the drafted harness (`/spec`, `/slice`, `/cold-review`, `/red-team`, reviewer agent, Stop hook, evals, traced client) — roughly twice the work, and not needed to start building.
+- **Revisit when:** After the first project's retro. Candidates: `/red-team` (bare version ~15 min), fork vs delegation for cold review, the Stop hook, the sandbox, CI/branch protection.
